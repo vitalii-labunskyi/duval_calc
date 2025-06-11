@@ -93,19 +93,19 @@
         <label>Базова волога, %<input class="basic" type="number" id="baseMoisture" step="0.01" /></label>
       </div>
       <div>
-        <label>Ціна дороб. за 1% вологи, грн<input type="number" id="priceMoisture" step="0.01" /></label>
+        <label>Ціна дороб. за 1% вологи, грн<input class="basic" type="number" id="priceMoisture" step="0.01" /></label>
       </div>
       <div>
-        <label>Базова смітна, %<input type="number" id="baseTrash" step="0.01" /></label>
+        <label>Базова смітна, %<input class="basic" type="number" id="baseTrash" step="0.01" /></label>
       </div>
       <div>
-        <label>Ціна дороб. за 1% смітної, грн<input type="number" id="priceTrash" step="0.01" /></label>
+        <label>Ціна дороб. за 1% смітної, грн<input class="basic" type="number" id="priceTrash" step="0.01" /></label>
       </div>
       <div>
-        <label>Базовий протеїн/олія, %<input type="number" id="baseProtein" step="0.01" /></label>
+        <label>Базовий протеїн/олія, %<input class="basic" type="number" id="baseProtein" step="0.01" /></label>
       </div>
       <div>
-        <label>Зйом за 1% протеїну/олії, грн<input type="number" id="priceProtein" step="0.01" /></label>
+        <label>Зйом за 1% протеїну/олії, грн<input class="basic" type="number" id="priceProtein" step="0.01" /></label>
       </div>
     </div>
 
@@ -196,8 +196,8 @@ function calc() {
   const duvalDeduction = priceContract * (weightGross - weightNet) / weightGross;
 
   // Фактична ціна та сума
-  const actualPrice = priceContract - totalQualityDeduction;
-  const totalSum = actualPrice * weightNet;
+  const actualPrice = priceContract - totalQualityDeduction - duvalDeduction;
+  const totalSum = actualPrice * weightGross;
 
   // Вивід результатів
   const outputElement = document.getElementById('output');
