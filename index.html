@@ -12,6 +12,7 @@
       --text: #ffffff;
       --table-border: #444;
       --gold: #a48000;
+      --grey: #cccccc;
     }
     body {
       margin: 0;
@@ -47,6 +48,11 @@
     .result { background: var(--gold); color:#111; font-weight:700; text-align:center;
       padding:0.8rem; border-radius:6px; margin-top:1rem; }
     .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+    .basic { 
+      width: 100%; box-sizing: border-box; padding: 0.45rem 0.5rem;
+      font-size: 1rem; border: 1px solid var(--accent-light); border-radius: 6px;
+      background: var(--gray); color: var(--text); 
+            }
   </style>
 </head>
 <body>
@@ -76,7 +82,7 @@
     </table>
 
     <h3>Базові показники <small style="font-weight:normal" id="baseLabel">(культура: Соя)</small></h3>
-    <div class="grid-2">
+    <div class="grid-2 grey">
       <div>
         <label>Базова волога, %<input type="number" id="baseMoisture" step="0.01" /></label>
       </div>
