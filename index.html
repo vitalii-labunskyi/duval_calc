@@ -155,13 +155,24 @@ function setBase() {
   document.getElementById('priceProtein').value = data.priceProtein;
 
   // Якщо соняшник — показати кислотне число
-  if (key === 'sunflower') {
-    document.getElementById('acidRow').style.display = '';
-    document.getElementById('acidNumber').value = data.acidNumber ?? 4;
-  } else {
-    document.getElementById('acidRow').style.display = 'none';
-    document.getElementById('acidNumber').value = '';
-  }
+ if (key === 'sunflower') {
+  document.getElementById('acidRow').style.display = '';
+  document.getElementById('acidNumber').value = data.acidNumber ?? 4;
+
+  document.getElementById('baseAcid').value = data.acidNumber ?? 4;
+  document.getElementById('priceAcid').value = 200;
+  document.getElementById('baseAcidWrapper').style.display = '';
+  document.getElementById('priceAcidWrapper').style.display = '';
+} else {
+  document.getElementById('acidRow').style.display = 'none';
+  document.getElementById('acidNumber').value = '';
+
+  document.getElementById('baseAcidWrapper').style.display = 'none';
+  document.getElementById('priceAcidWrapper').style.display = 'none';
+  document.getElementById('baseAcid').value = '';
+  document.getElementById('priceAcid').value = '';
+}
+
 
   document.getElementById('baseLabel').textContent = `(культура: ${document.querySelector('#culture option:checked').innerText})`;
 }
