@@ -131,7 +131,7 @@
 <script>
 const cultures = {
   soy:        { trash: 2, moisture: 12, protein: 36, priceMoisture: 160, priceTrash: 30, priceProtein: 150 },
-  sunflower:  { trash: 3, moisture: 8,  protein: 50, priceMoisture: 160, priceTrash: 30, priceProtein: 100 },
+  sunflower:  { trash: 3, moisture: 8,  protein: 50, acidNumber: 4, priceMoisture: 160, priceTrash: 30, priceProtein: 100 },
   corn:       { trash: 2, moisture: 14, protein: 0,  priceMoisture: 120, priceTrash: 30, priceProtein: 30 },
   wheat:      { trash: 2, moisture: 14, protein: 0,  priceMoisture: 140, priceTrash: 30, priceProtein: 30 },
   rapeseed:   { trash: 2, moisture: 8,  protein: 36, priceMoisture: 160, priceTrash: 30, priceProtein: 150 }
@@ -141,19 +141,31 @@ function setBase() {
   const key = document.getElementById('culture').value;
   const data = cultures[key];
 
+  // Основні значення
+  document.getElementById('moisture').value = data.moisture;
+  document.getElementById('trash').value = data.trash;
+  document.getElementById('protein').value = data.protein;
+
   document.getElementById('baseTrash').value = data.trash;
   document.getElementById('baseMoisture').value = data.moisture;
   document.getElementById('baseProtein').value = data.protein;
+
   document.getElementById('priceMoisture').value = data.priceMoisture;
   document.getElementById('priceTrash').value = data.priceTrash;
   document.getElementById('priceProtein').value = data.priceProtein;
-  document.getElementById('baseLabel').textContent = `(культура: ${document.querySelector('#culture option:checked').innerText})`;
 
-  const showAcid = key === 'sunflower';
-  document.getElementById('acidRow').style.display = showAcid ? 'table-row' : 'none';
-  document.getElementById('baseAcidWrapper').style.display = showAcid ? 'block' : 'none';
-  document.getElementById('priceAcidWrapper').style.display = showAcid ? 'block' : 'none';
+  // Якщо соняшник — показати кислотне число
+  if (key === 'sunflower') {
+    document.getElementById('acidRow').style.display = '';
+    document.getElementById('acidNumber').value = data.acidNumber ?? 4;
+  } else {
+    document.getElementById('acidRow').style.display = 'none';
+    document.getElementById('acidNumber').value = '';
+  }
+
+  document.getElementById('baseLabel').textContent = `(культура: ${document.querySelector('#culture option:checked').innerText})`;
 }
+
 
 setBase();
 
