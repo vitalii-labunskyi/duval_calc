@@ -131,7 +131,7 @@
 <script>
 const cultures = {
   soy:        { trash: 2, moisture: 12, protein: 36, priceMoisture: 160, priceTrash: 30, priceProtein: 150 },
-  sunflower:  { trash: 3, moisture: 8,  protein: 50, acidNumber: 4, priceMoisture: 160, priceTrash: 30, priceProtein: 100 },
+  sunflower:  { trash: 3, moisture: 8,  protein: 50, acidNumber: 4, priceMoisture: 160, priceTrash: 30, priceProtein: 100, priceAcid: 300 },
   corn:       { trash: 2, moisture: 14, protein: 0,  priceMoisture: 120, priceTrash: 30, priceProtein: 30 },
   wheat:      { trash: 2, moisture: 14, protein: 0,  priceMoisture: 140, priceTrash: 30, priceProtein: 30 },
   rapeseed:   { trash: 2, moisture: 8,  protein: 36, priceMoisture: 160, priceTrash: 30, priceProtein: 150 }
@@ -160,7 +160,7 @@ function setBase() {
   document.getElementById('acidNumber').value = data.acidNumber ?? 4;
 
   document.getElementById('baseAcid').value = data.acidNumber ?? 4;
-  document.getElementById('priceAcid').value = 200;
+  document.getElementById('priceAcid').value = data.priceAcid;
   document.getElementById('baseAcidWrapper').style.display = '';
   document.getElementById('priceAcidWrapper').style.display = '';
 } else {
