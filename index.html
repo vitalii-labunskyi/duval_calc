@@ -153,9 +153,19 @@ function calc() {
   const trashExcess = Math.max(0, trash - bTrash); // % понад базу
 
   // Перерахунок на втрату ваги (т)
-  const lossMoist = gross * moistExcess / (100 - bMoist) ;
-  const lossTrash = gross * trashExcess / 100; // смітна – просте вирах.
-  const weightNet = gross - lossMoist - lossTrash;
+// %-ний зйом за вологу
+const pctMoist = Math.max(0, 100 * (moist - bMoist) / (100 - bMoist));
+
+// %-ний зйом за смітну з урахуванням вже знятої вологи
+const pctTrash = Math.max(
+  0,
+  ((100 - pctMoist) * (trash - bTrash)) / (100 - bTrash)
+);
+
+// підсумковий зйом у % та залікова вага
+const pctTotal = pctMoist + pctTrash;
+const weightNet = gross - gross * pctTotal / 100;
+
 
   // === 2. Грошові зйоми (грн/т) ===
   const deductMoist = moistExcess * pMoist;   // грн/т
