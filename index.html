@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Калькулятор залікової ваги (Дюваль)</title>
+  <style>
+    :root {
+      --bg: #0f0f11;
+      --accent: #3a593c;
+      --accent-light: #4d774f;
+      --text: #ffffff;
+      --table-border: #444;
+      --gold: #a48000;
+    }
+    body {
+      margin: 0;
+      font-family: "Inter", sans-serif;
+      color: var(--text);
+      background: var(--bg);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 2rem;
+    }
+    .card {
+      max-width: 620px;
+      width: 100%;
+      background: #1c1c1e;
+      padding: 2rem;
+      border-radius: 1rem;
+      box-shadow: 0 0 12px rgba(0, 0, 0, 0.6);
+    }
+    h1 { margin-top: 0; text-align: center; font-size: 1.4rem; }
+    table { width: 100%; border-collapse: collapse; margin: 1.5rem 0; }
+    th,td { padding: 0.5rem 0.75rem; border: 1px solid var(--table-border); }
+    th { background:#222; font-weight:600; text-align:left; }
+    input[type="number"], select {
+      width: 100%; box-sizing: border-box; padding: 0.45rem 0.5rem;
+      font-size: 1rem; border: 1px solid var(--accent-light); border-radius: 6px;
+      background: var(--accent); color: var(--text);
+    }
+    .btn { width: 100%; margin-top: 1rem; padding: 0.6rem 1rem; font-size: 1rem;
+      font-weight:600; border:none; border-radius:6px; background: var(--accent-light);
+      color: var(--text); cursor:pointer; }
+    .result { background: var(--gold); color:#111; font-weight:700; text-align:center;
+      padding:0.8rem; border-radius:6px; margin-top:1rem; }
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>Калькулятор залікової ваги (Дюваль)</h1>
+
+    <table>
+      <tbody>
+        <tr>
+          <th>Культура</th>
+          <td>
+            <select id="culture" onchange="setBase()">
+              <option value="soy">Соя</option>
+              <option value="sunflower">Соняшник</option>
+              <option value="corn">Кукурудза</option>
+              <option value="wheat">Пшениця</option>
+              <option value="rapeseed">Ріпак (non‑GMO)</option>
+            </select>
+          </td>
+        </tr>
+        <tr><th>Вага брутто, т</th><td><input type="number" id="weightGross" value="25.5" /></td></tr>
+        <tr><th>Смітна, %</th><td><input type="number" id="trash" value="3" /></td></tr>
+        <tr><th>Волога, %</th><td><input type="number" id="moisture" value="14" /></td></tr>
+        <tr><th>Протеїн / Олія, %</th><td><input type="number" id="protein" value="35" /></td></tr>
+        <tr><th>Ціна (договірна), грн/т</th><td><input type="number" id="priceContract" value="15500" /></td></tr>
+      </tbody>
+    </table>
+
+    <h3>Базові показники <small style="font-weight:normal" id="baseLabel">(культура: Соя)</small></h3>
+    <div class="grid-2">
+      <div>
+        <label>Базова смітна, %<input type="number" id="baseTrash" /></label>
+      </div>
+      <div>
+        <label>Базова волога, %<input type="number" id="baseMoisture" /></label>
+      </div>
+      <div>
+        <label>Базовий протеїн/олія, %<input type="number" id="baseProtein" /></label>
+      </div>
+      <div>
+        <label>Ціна дороб. за 1% вологи, грн<input type="number" id="priceMoisture" /></label>
+      </div>
+      <div>
+        <label>Ціна дороб. за 1% смітни, грн<input type="number" id="priceTrash" /></label>
+      </div>
+      <div>
+        <label>Зйом за 1% протеїну/олії, грн<input type="number" id="priceProtein" /></label>
+      </div>
+    </div>
+
+    <button class="btn" onclick="calc()">Розрахувати</button>
+
+    <div id="output" class="result" style="display:none"></div>
+  </div>
+
+<script>
+const cultures = {
+  soy:        { trash: 2, moisture: 12, protein: 36, priceMoisture: 160, priceTrash:30, priceProtein:150 },
+  sunflower:  { trash: 3, moisture: 8,  protein: 50, priceMoisture: 160, priceTrash:30, priceProtein:100 },
+  corn:       { trash: 2, moisture: 14, protein: 0,  priceMoisture: 120, priceTrash:30, priceProtein:30 },
+  wheat:      { trash: 2, moisture: 14, protein: 0,  priceMoisture: 140, priceTrash:30, priceProtein:30 },
+  rapeseed:   { trash: 2, moisture: 8,  protein: 36, priceMoisture: 160, priceTrash:30, priceProtein:150 }
+};
+
+function setBase() {
+  const key = document.getElementById('culture').value;
+  const data = cultures[key];
+  document.getElementById('baseTrash').value    = data.trash;
+  document.getElementById('baseMoisture').value = data.moisture;
+  document.getElementById('baseProtein').value  = data.protein;
+  document.getElementById('priceMoisture').value= data.priceMoisture;
+  document.getElementById('priceTrash').value   = data.priceTrash;
+  document.getElementById('priceProtein').value = data.priceProtein;
+  document.getElementById('baseLabel').textContent = `(культура: ${document.querySelector('#culture option:checked').innerText})`;
+}
+setBase();
+
+function format(n, fract=2) {
+  return (+n).toLocaleString('uk-UA', {maximumFractionDigits: fract});
+}
+
+function calc() {
+  const gross   = +document.getElementById('weightGross').value;   // т
+  const trash   = +document.getElementById('trash').value;         // % фактична
+  const moist   = +document.getElementById('moisture').value;      // % фактична
+  const prot    = +document.getElementById('protein').value;       // % фактична
+  const price0  = +document.getElementById('priceContract').value; // грн/т
+
+  const bTrash  = +document.getElementById('baseTrash').value;
+  const bMoist  = +document.getElementById('baseMoisture').value;
+  const bProt   = +document.getElementById('baseProtein').value;
+  const pMoist  = +document.getElementById('priceMoisture').value;
+  const pTrash  = +document.getElementById('priceTrash').value;
+  const pProt   = +document.getElementById('priceProtein').value;
+
+  if([gross,trash,moist,prot,price0,bTrash,bMoist,bProt,pMoist,pTrash,pProt].some(v=>isNaN(v)||v<0)){
+    alert('Перевірте введені дані.');
+    return;
+  }
+
+  // === 1. Залікова вага (спрощена модель) ===
+  // формула Дюваль: відсоток відхилення * (100 / (100 - базовий показник))
+  const moistExcess = Math.max(0, moist - bMoist); // % понад базу
+  const trashExcess = Math.max(0, trash - bTrash); // % понад базу
+
+  // Перерахунок на втрату ваги (т)
+  const lossMoist = gross * moistExcess / (100 - bMoist) ;
+  const lossTrash = gross * trashExcess / 100; // смітна – просте вирах.
+  const weightNet = gross - lossMoist - lossTrash;
+
+  // === 2. Грошові зйоми (грн/т) ===
+  const deductMoist = moistExcess * pMoist;   // грн/т
+  const deductTrash = trashExcess * pTrash;   // грн/т
+  const protLack    = Math.max(0, bProt - prot);   // % недостачі
+  const deductProt  = protLack * pProt;       // грн/т
+
+  const totalDeductPerTon = deductMoist + deductTrash + deductProt;
+  const priceFact = price0 - totalDeductPerTon;  // фактична ціна, грн/т
+  const sum = priceFact * weightNet;             // сума до оплати
+
+  const el = document.getElementById('output');
+  el.style.display = 'block';
+  el.innerHTML = `
+    Вага брутто: <b>${format(gross)} т</b><br>
+    Вага залікова: <b>${format(weightNet)} т</b><br>
+    Зйом за показники: <b>${format(totalDeductPerTon,0)} грн/т</b><br>
+    Фактична ціна: <b>${format(priceFact,0)} грн/т</b><br>
+    <hr style="border:0;border-top:1px solid #333">Сума: <b>${format(sum,0)} грн</b>`;
+}
+</script>
+</body>
+</html>
