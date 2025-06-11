@@ -228,7 +228,7 @@ function calc() {
   const duvalDeduction = priceContract * (weightGross - weightNet) / weightGross;
 
   // Фактична ціна та сума
-  const actualPrice = priceContract - totalQualityDeduction - duvalDeduction;
+  const actualPrice = priceContract - totalQualityDeduction - duvalDeduction - acidDeduction;
   const totalSum = actualPrice * weightGross;
 
 // Вивід результатів
