@@ -83,6 +83,10 @@
         <tr><th>Волога, %</th><td><input type="number" id="moisture" value="14" step="0.01" /></td></tr>
         <tr><th>Смітна, %</th><td><input type="number" id="trash" value="3" step="0.01" /></td></tr>
         <tr><th>Протеїн / Олія, %</th><td><input type="number" id="protein" value="35" step="0.01" /></td></tr>
+        <tr id="acidRow" style="display:none;">
+          <th>Кислотне число</th>
+          <td><input type="number" id="acidNumber" step="0.01" /></td>
+        </tr>
         <tr><th>Ціна (договірна), грн/т</th><td><input type="number" id="priceContract" value="15500" step="0.01" /></td></tr>
       </tbody>
     </table>
@@ -107,6 +111,16 @@
       <div>
         <label>Зйом за 1% протеїну/олії, грн<input class="basic" type="number" id="priceProtein" step="0.01" /></label>
       </div>
+      <div id="baseAcidWrapper" style="display:none;">
+        <label>Базове кислотне число
+          <input class="basic" type="number" id="baseAcid" value="4" step="0.01" />
+        </label>
+      </div>
+      <div id="priceAcidWrapper" style="display:none;">
+        <label>Зйом за 1 од. кислотного числа, грн
+          <input class="basic" type="number" id="priceAcid" value="200" step="0.01" />
+        </label>
+      </div>
     </div>
 
     <button class="btn" onclick="calc()">Розрахувати</button>
@@ -126,6 +140,7 @@ const cultures = {
 function setBase() {
   const key = document.getElementById('culture').value;
   const data = cultures[key];
+
   document.getElementById('baseTrash').value = data.trash;
   document.getElementById('baseMoisture').value = data.moisture;
   document.getElementById('baseProtein').value = data.protein;
@@ -133,6 +148,11 @@ function setBase() {
   document.getElementById('priceTrash').value = data.priceTrash;
   document.getElementById('priceProtein').value = data.priceProtein;
   document.getElementById('baseLabel').textContent = `(культура: ${document.querySelector('#culture option:checked').innerText})`;
+
+  const showAcid = key === 'sunflower';
+  document.getElementById('acidRow').style.display = showAcid ? 'table-row' : 'none';
+  document.getElementById('baseAcidWrapper').style.display = showAcid ? 'block' : 'none';
+  document.getElementById('priceAcidWrapper').style.display = showAcid ? 'block' : 'none';
 }
 
 setBase();
@@ -177,6 +197,18 @@ function calc() {
   // Відсоток зйому за смітну (з урахуванням вже знятої вологи)
   const trashDeductionPercent = trashExcess > 0 ? 
     ((100 - moistureDeductionPercent) * trashExcess) / (100 - baseTrash) : 0;
+ 
+  // Зйом за кислотне число
+  let acidDeduction = 0;
+    if (document.getElementById('culture').value === 'sunflower') {
+      const acid = parseFloat(document.getElementById('acidNumber').value);
+      const baseAcid = parseFloat(document.getElementById('baseAcid').value);
+      const priceAcid = parseFloat(document.getElementById('priceAcid').value);
+      if (!isNaN(acid) && !isNaN(baseAcid) && !isNaN(priceAcid) && acid > baseAcid) {
+        acidDeduction = (acid - baseAcid) * priceAcid;
+      }
+    }
+
 
   // Загальний відсоток зйому
   const totalDeductionPercent = moistureDeductionPercent + trashDeductionPercent;
@@ -190,7 +222,7 @@ function calc() {
   const proteinLack = Math.max(0, baseProtein - protein);
   const proteinDeduction = proteinLack * priceProtein;
 
-  const totalQualityDeduction = moistureDeduction + trashDeduction + proteinDeduction;
+  const totalQualityDeduction = moistureDeduction + trashDeduction + proteinDeduction + acidDeduction;
 
   // Зйом по Дювалю - точний розрахунок
   const duvalDeduction = priceContract * (weightGross - weightNet) / weightGross;
@@ -199,18 +231,25 @@ function calc() {
   const actualPrice = priceContract - totalQualityDeduction - duvalDeduction;
   const totalSum = actualPrice * weightGross;
 
-  // Вивід результатів
-  const outputElement = document.getElementById('output');
-  outputElement.style.display = 'block';
-  outputElement.innerHTML = `
-    Вага брутто: <b>${formatNumber(weightGross, 2)} т</b><br>
-    Вага залікова: <b>${formatNumber(weightNet, 3)} т</b><br>
-    Зйом за показники: <b>${formatNumber(totalQualityDeduction, 2)} грн/т</b><br>
-    Зйом по Дювалю: <b>${formatNumber(duvalDeduction, 2)} грн</b><br>
-    Фактична ціна: <b>${formatNumber(actualPrice, 2)} грн/т</b><br>
-    <hr style="border:0;border-top:1px solid #333;margin:0.5rem 0">
-    Сума: <b>${formatNumber(totalSum, 2)} грн</b>
-  `;
+// Вивід результатів
+const outputElement = document.getElementById('output');
+outputElement.style.display = 'block';
+
+let acidLine = '';
+if (document.getElementById('culture').value === 'sunflower' && acidDeduction > 0) {
+  acidLine = `Зйом за кислотне число: <b>${formatNumber(acidDeduction, 2)} грн/т</b><br>`;
+}
+
+outputElement.innerHTML = `
+  Вага брутто: <b>${formatNumber(weightGross, 2)} т</b><br>
+  Вага залікова: <b>${formatNumber(weightNet, 3)} т</b><br>
+  Зйом за показники: <b>${formatNumber(totalQualityDeduction, 2)} грн/т</b><br>
+  ${acidLine}
+  Зйом по Дювалю: <b>${formatNumber(duvalDeduction, 2)} грн</b><br>
+  Фактична ціна: <b>${formatNumber(actualPrice, 2)} грн/т</b><br>
+  <hr style="border:0;border-top:1px solid #333;margin:0.5rem 0">
+  Сума: <b>${formatNumber(totalSum, 2)} грн</b>
+`;
 }
 </script>
 </body>
