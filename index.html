@@ -48,11 +48,17 @@
     .result { background: var(--gold); color:#111; font-weight:700; text-align:center;
       padding:0.8rem; border-radius:6px; margin-top:1rem; }
     .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
-    .basic { 
-      width: 100%; box-sizing: border-box; padding: 0.45rem 0.5rem;
-      font-size: 1rem; border: 1px solid var(--accent-light); border-radius: 6px;
-      background: var(--gray); color: var(--text); 
-            }
+    input.basic {
+      width: 100%;
+      box-sizing: border-box;
+      padding: 0.45rem 0.5rem;
+      font-size: 1rem;
+      border: 1px solid var(--accent-light);
+      border-radius: 6px;
+      background: var(--gray);  /* тепер перекриває зелений */
+      color: var(--text);
+    }
+
   </style>
 </head>
 <body>
