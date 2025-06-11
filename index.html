@@ -222,7 +222,7 @@ function calc() {
   const proteinLack = Math.max(0, baseProtein - protein);
   const proteinDeduction = proteinLack * priceProtein;
 
-  const totalQualityDeduction = moistureDeduction + trashDeduction + proteinDeduction + acidDeduction;
+  const totalQualityDeduction = moistureDeduction + trashDeduction + proteinDeduction;
 
   // Зйом по Дювалю - точний розрахунок
   const duvalDeduction = priceContract * (weightGross - weightNet) / weightGross;
